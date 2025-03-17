@@ -46,6 +46,8 @@ Instead `build_a` you can use `build_b` (`from KanvasObjectKlick import build_b`
 ```python
 # ...
 
+from KanvasObjectKlick import build_b
+
 # It will create `/path/to/out/file.zip` file. Just extract it and open `index.html` in your browser.
 build_b(keks, "/path/to/out/file", "/path/to/working/dir")
 ```

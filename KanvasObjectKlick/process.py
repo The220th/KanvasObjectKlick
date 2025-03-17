@@ -14,7 +14,17 @@ from KanvasObjectKlick.assets import (get_html_mode_a_part_one, get_html_mode_a_
 from KanvasObjectKlick.common import KOKEntity
 
 
-def build_a(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike | None = None, zip_need: bool = False) -> str:
+def build_a(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike | str | None = None, zip_need: bool = False) -> tuple[str, str | None]:
+    """
+    build html text.
+    if out_file_path == None, then html file will not saved.
+    Returns tuple of 1) html text and 2) saved path
+
+    :param KOKEntitys: list of KOKEntity
+    :param out_file_path: path to save html text without extension
+    :param zip_need: if True, then output file fill be zip-archive
+    :return: 1 - html text, 2 - saved path or None
+    """
     to_join = []
     for i in range(len(KOKEntitys)):
         KOKEntity_i_str = KOKEntitys[i].get_dict_str()
@@ -24,25 +34,26 @@ def build_a(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike | None = Non
     res = "[\n" + "".join(to_join) + "]"
     res = get_html_mode_a_part_one() + res + get_html_mode_a_part_two()
     if out_file_path is None:
-        return res
+        return res, None
     else:
         if not zip_need:
             out_path = str(out_file_path) + ".html"
             with open(out_path, "w", encoding="utf-8") as fd:
                 fd.write(res)
                 fd.flush()
-            return out_path
+            return res, out_path
         else:
             out_path = str(out_file_path) + ".zip"
             with zipfile.ZipFile(out_path, 'w') as zipf:
                 with zipf.open('index.html', 'w') as file:
                     file.write(res.encode('utf-8'))
                     file.flush()
+            return res, out_path
 
 
 def build_b(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike, working_dir: os.PathLike):
     """
-    Do same as build_a, but not all in one file. It may be usefull if too much objects to visualize.
+    Do same as build_a, but not all in one file. It may be usefull if too much KOKEntity objects to visualize.
 
     :param KOKEntitys:
     :param out_file_path: path to out zip file
