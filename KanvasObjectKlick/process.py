@@ -65,18 +65,26 @@ def build_b(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike, working_dir
         work_dir = os.path.join(working_dir, gen_random_string())
     mkdir_with_p(work_dir)
 
-    to_join = []
-    for i in range(len(KOKEntitys)):
-        KOKEntity_i_str = KOKEntitys[i].get_dict_str(path_to_work_dir_if_mode_b=Path(work_dir))
-        if i != len(KOKEntitys)-1:
-            KOKEntity_i_str += ",\n"
-        to_join.append(KOKEntity_i_str)
-    res = "[\n" + "".join(to_join) + "]"
-    res = get_html_mode_b_part_one() + res + get_html_mode_b_part_two()
+    # to_join = []
+    # for i in range(len(KOKEntitys)):
+    #     KOKEntity_i_str = KOKEntitys[i].get_dict_str(path_to_work_dir_if_mode_b=Path(work_dir))
+    #     if i != len(KOKEntitys)-1:
+    #         KOKEntity_i_str += ",\n"
+    #     to_join.append(KOKEntity_i_str)
+    # res = "[\n" + "".join(to_join) + "]"
+    # res = get_html_mode_b_part_one() + res + get_html_mode_b_part_two()
 
     res_path = os.path.join(work_dir, "index.html")
     with open(res_path, "w", encoding="utf-8") as fd:
-        fd.write(res)
+        fd.write(get_html_mode_b_part_one())
+        fd.write("[\n")
+        for i in range(len(KOKEntitys)):
+            KOKEntity_i_str = KOKEntitys[i].get_dict_str(path_to_work_dir_if_mode_b=Path(work_dir))
+            if i != len(KOKEntitys)-1:
+                KOKEntity_i_str += ",\n"
+            fd.write(KOKEntity_i_str)
+        fd.write("]")
+        fd.write(get_html_mode_b_part_two())
         fd.flush()
 
     zip_filename = f"{out_file_path}.zip"
