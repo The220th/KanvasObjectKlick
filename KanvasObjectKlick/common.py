@@ -9,7 +9,7 @@ from PIL import Image
 import numpy as np
 import base64
 import io
-from ksupk import get_current_function_name, gen_random_string, mkdir_with_p
+from ksupk import get_current_function_name, gen_random_string, mkdir_with_p, calc_hash_of_str
 
 from KanvasObjectKlick.assets import create_black_image
 
@@ -115,6 +115,8 @@ class KOKEntity:
                 pass
             else:
                 raise ValueError(f"Callable must returns only np.ndarray or PIL.Image.Image, but it returns {type(img)}")
+        else:
+            raise ValueError(f"No such self.__lazy_load=={self.__lazy_load} mode. ")
 
         res = (f"\"name\": \"{self.name}\", \"x\": {self.coords[0]}, \"y\": {self.coords[1]}, "
                f"\"color\": [{self.color[0]}, {self.color[1]}, {self.color[2]}], \"image\": ")
@@ -125,9 +127,11 @@ class KOKEntity:
             if not os.path.isdir(image_out_dir_path):
                 mkdir_with_p(image_out_dir_path)
 
-            img_name = f"{self.name}_{gen_random_string()}.png"
+            # img_name = f"{self.name}_{gen_random_string()}.png"
+            img_name = f"{calc_hash_of_str(self.name)}_{gen_random_string()}.png"
             img_path = os.path.join(image_out_dir_path, img_name)
             img.save(img_path, "PNG")
 
             res += f"\"{IMAGE_FOLDER_NAME}/{img_name}\""
+
         return "{" + res + "}"
