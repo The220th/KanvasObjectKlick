@@ -51,14 +51,14 @@ def build_a(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike | str | None
             return res, out_path
 
 
-def build_b(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike, working_dir: os.PathLike):
+def build_b(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike, working_dir: os.PathLike) -> str:
     """
     Do same as build_a, but not all in one file. It may be usefull if too much KOKEntity objects to visualize.
 
     :param KOKEntitys:
     :param out_file_path: path to out zip file
     :param working_dir: dir, where build_b will be worked. build_b clean after process end
-    :return:
+    :return: return result output zip file name
     """
     work_dir = None
     while work_dir is None or os.path.isdir(work_dir):
@@ -97,6 +97,8 @@ def build_b(KOKEntitys: list[KOKEntity], out_file_path: os.PathLike, working_dir
                 arcname = os.path.relpath(file_path, start=work_dir)
                 zipf.write(file_path, os.path.join(zip_dir_name, arcname))
     rm_folder_content(work_dir, root_dir_too=True)
+
+    return zip_filename
 
 
 def test_it():
