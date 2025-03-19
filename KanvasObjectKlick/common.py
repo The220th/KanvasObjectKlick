@@ -103,21 +103,23 @@ class KOKEntity:
         # {"name": "Точка 1", "x": 10.5, "y": 20.3, "color": [255, 0, 0], "image": "data:image/png;base64,..."}
         # mode b:
         # {"name": "Точка 1", "x": 10.5, "y": 20.3, "color": [255, 0, 0], "image": "images/img1.jpg"}
-        if self.__lazy_load == 1:
-            self.img = Image.open(self.img)
+        if self.__lazy_load == 0:
+            img = self.img
+        elif self.__lazy_load == 1:
+            img = Image.open(self.img)
         elif self.__lazy_load == 2:
-            self.img = self.func_callable()
-            if isinstance(self.img, np.ndarray):
-                self.img = convert_cv2_to_pillow(self.img)
-            elif isinstance(self.img, PIL.Image.Image):
+            img = self.func_callable()
+            if isinstance(img, np.ndarray):
+                img = convert_cv2_to_pillow(img)
+            elif isinstance(img, PIL.Image.Image):
                 pass
             else:
-                raise ValueError(f"Callable must returns only np.ndarray or PIL.Image.Image, but it returns {type(self.img)}")
+                raise ValueError(f"Callable must returns only np.ndarray or PIL.Image.Image, but it returns {type(img)}")
 
         res = (f"\"name\": \"{self.name}\", \"x\": {self.coords[0]}, \"y\": {self.coords[1]}, "
                f"\"color\": [{self.color[0]}, {self.color[1]}, {self.color[2]}], \"image\": ")
         if path_to_work_dir_if_mode_b is None:
-            res += f"\"{pillow_to_html_base64(self.img)}\""
+            res += f"\"{pillow_to_html_base64(img)}\""
         else:
             image_out_dir_path = os.path.join(path_to_work_dir_if_mode_b, IMAGE_FOLDER_NAME)
             if not os.path.isdir(image_out_dir_path):
@@ -125,7 +127,7 @@ class KOKEntity:
 
             img_name = f"{self.name}_{gen_random_string()}.png"
             img_path = os.path.join(image_out_dir_path, img_name)
-            self.img.save(img_path, "PNG")
+            img.save(img_path, "PNG")
 
             res += f"\"{IMAGE_FOLDER_NAME}/{img_name}\""
         return "{" + res + "}"
